@@ -1,4 +1,4 @@
-package com.SocialMedia.app.models;
+package org.server.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -22,5 +22,5 @@ public class User {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
     @NotNull
-    private String role;
+    private String Role;
 }
