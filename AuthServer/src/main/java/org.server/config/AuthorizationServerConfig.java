@@ -1,9 +1,12 @@
 package org.server.config;
 
+import org.server.models.User;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.server.repositories.UserRepository;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -11,9 +14,11 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
+//import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -22,6 +27,7 @@ import org.springframework.security.oauth2.server.authorization.client.InMemoryR
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -36,16 +42,30 @@ import java.util.UUID;
 //@Import(OAuth2AuthorizationServerConfiguration.class)
 public class AuthorizationServerConfig {
     @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("endclient")
-                .clientSecret("{noop}123456")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("http://127.0.0.1:9090/login/oauth2/code/endclient")
-                .scope(OidcScopes.OPENID)
-                .build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
+    @Bean
+    public RegisteredClientRepository registeredClientRepository(
+            PasswordEncoder passwordEncoder) {
+        RegisteredClient registeredClient =
+                RegisteredClient.withId(UUID.randomUUID().toString())
+                        .clientId("client1")
+                        .clientSecret(passwordEncoder.encode("secret"))
+                        .clientAuthenticationMethod(
+                                ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                        .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                        .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                        .redirectUri(
+                                "http://127.0.0.1:9090/login/oauth2/code/client1")
+                        .scope("write")
+                        .scope("delete")
+                        .scope(OidcScopes.OPENID)
+//                        .clientSettings(
+//                                clientSettings -> clientSettings.requireUserConsent(true))
+//                        .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                        .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
 
@@ -88,14 +108,28 @@ public class AuthorizationServerConfig {
         return keyPairGenerator.generateKeyPair();
     }
 
-    @Bean
-    public UserDetailsService users() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("admin")
-                .password("password")
-                .roles("ADMIN")
-                .build();
+//    @Bean
+//    public UserDetailsService users() {
+//        UserDetails user = User.withDefaultPasswordEncoder()
+//                .username("admin")
+//                .password("password")
+//                .roles("ADMIN")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(user);
+//    }
 
-        return new InMemoryUserDetailsManager(user);
+    @Bean
+    public UserDetailsService users(UserRepository repository) {
+        return login -> repository.findByLogin(login);
+    }
+
+    @Bean
+    public ApplicationRunner dataLoader(
+            UserRepository repo, PasswordEncoder encoder) {
+        return args -> {
+            repo.save(
+                    new User("admin", encoder.encode("password"), "ROLE_ADMIN"));
+        };
     }
 }
