@@ -9,5 +9,5 @@ public class SocialMediaApp {
         SpringApplication.run(SocialMediaApp.class, args);
     }
     // curl -v -X GET http://localhost:8080/users
-    // curl -v -X POST http://localhost:8080/users -d '{"login": "arkadiy", "password": "123"}' -H "Content-Type: application/json"
+    // curl -v -X POST http://localhost:8080/users -d '{"login": "arkadiy", "password": "123456", "role": "ADMIN"}' -H "Content-Type: application/json"
 }

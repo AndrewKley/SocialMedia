@@ -22,19 +22,31 @@ public class UserService {
         this.noteService = noteService;
     }
 
+    public Iterable<User> findAllUser() {
+        return repository.findAll();
+    }
+
+    public Optional<User> findUserByLogin(String login) {
+        return repository.findByLogin(login);
+    }
+
+    public User saveUser(User user) {
+        repository.save(user);
+        return user;
+    }
 
     public User addUser(User user) throws UserNotFoundException {
         repository.save(user);
         return user;
     }
 
-    public User deleteUser(User user) throws UserNotFoundException {
+    public User deleteUser(User user) {
         Optional<User> resUser = repository.findByLogin(user.getLogin());
-        if (!resUser.isPresent()) {
-            throw new UserNotFoundException();
+        if (resUser.isPresent()) {
+            repository.delete(user);
+            return resUser.get();
         }
-        repository.delete(user);
-        return resUser.get();
+        return null;
     }
 
     public User updateUser(User user) throws UserNotFoundException {
@@ -43,18 +55,13 @@ public class UserService {
         return user;
     }
 
-    public Note addNoteByUser(User user, Note note) {
+    public Note addNoteByUser(User user, Note note) throws UserNotFoundException {
         Optional<User> resUser = repository.findById(user.getLogin());
-        Optional<Note> resNote = noteService.findNote(note);
-
-//        if (!resUser.isPresent()) {
-//            throw new UserNotFoundException();
-//        }
-//        if (!resNote.isPresent()) {
-//            throw new NoteNotFoundException();
-//        }
-//        resUser.get().getNotes().get(note.getId());
-        return resNote.get();
+        if (!resUser.isPresent()) {
+            throw new UserNotFoundException();
+        }
+        resUser.get().getNotes().add(note);
+        return note;
     }
 
 }

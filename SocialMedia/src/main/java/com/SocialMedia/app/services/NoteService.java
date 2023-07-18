@@ -13,11 +13,15 @@ public class NoteService {
     @Autowired
     private NoteRepository repository;
 
+    public Iterable<Note> findAll() {
+        return repository.findAll();
+    }
+
     public Optional<Note> findNote(Note note) {
         return repository.findById(note.getId());
     }
 
-    public Note addNote(Note note) throws NoteNotFoundException {
+    public Note addNote(Note note) {
         repository.save(note);
         return note;
     }

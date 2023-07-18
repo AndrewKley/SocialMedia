@@ -1,6 +1,6 @@
 package com.SocialMedia.app.controllers;
 
-import com.SocialMedia.app.repositories.UserRepository;
+import com.SocialMedia.app.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,20 +14,21 @@ import java.util.Optional;
 @RequestMapping(value = "/users", produces = "application/json")
 @CrossOrigin(origins = "http://socialmedia:8080")
 public class UserController {
-    private UserRepository userRepository;
+    private final UserService service;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService service) {
+        this.service = service;
     }
+
 
     @GetMapping
     public Iterable<User> findAllUsers() {
-        return userRepository.findAll();
+        return service.findAllUser();
     }
 
     @GetMapping("{login}")
     public ResponseEntity<User> findUserById(@PathVariable("login") String login) {
-        Optional<User> user = userRepository.findByLogin(login);
+        Optional<User> user = service.findUserByLogin(login);
         if (user.isPresent()) {
             return new ResponseEntity<>(user.get(), HttpStatus.FOUND);
         }
@@ -37,20 +38,20 @@ public class UserController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public User postUser(@RequestBody User user) {
-        userRepository.save(user);
+        service.saveUser(user);
         return user;
     }
 
     @PutMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<User> putUser(@RequestBody User user) {
-        Optional<User> tmpUser = userRepository.findByLogin(user.getLogin());
+        Optional<User> tmpUser = service.findUserByLogin(user.getLogin());
         if (!tmpUser.isPresent()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         if (user.getPassword() != null) {
-            userRepository.delete(user);
-            userRepository.save(tmpUser.get());
+            service.deleteUser(user);
+            service.saveUser(tmpUser.get());
             return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
@@ -59,9 +60,9 @@ public class UserController {
     @DeleteMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<User> deleteUser(@RequestBody User user) {
-        Optional<User> tmpUser = userRepository.findByLogin(user.getLogin());
+        Optional<User> tmpUser = service.findUserByLogin(user.getLogin());
         if (tmpUser.isPresent()) {
-            userRepository.delete(user);
+            service.deleteUser(user);
             return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

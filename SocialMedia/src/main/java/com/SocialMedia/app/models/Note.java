@@ -1,8 +1,6 @@
 package com.SocialMedia.app.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Note {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @NotNull
     private Long id;
     @NotNull
@@ -23,5 +22,5 @@ public class Note {
     private String body;
     @NotNull
     @OneToOne
-    private String user;
+    private User user;
 }

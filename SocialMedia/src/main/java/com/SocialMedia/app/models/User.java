@@ -25,5 +25,6 @@ public class User {
     private String password;
     @NotNull
     private String role;
+    @OneToMany
     private List<Note> notes;
 }
