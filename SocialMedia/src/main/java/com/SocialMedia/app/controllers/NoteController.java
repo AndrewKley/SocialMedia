@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 // curl -v -X GET http://localhost:8080/users/note
-//curl -v -X POST http://localhost:8080/users/note -d '{"header": "Cart", "body": "Buy a chocolate, a car", "user": {"login": "arkadiy", "password": "123456", "role": "ADMIN"}}' -H "Content-Type: application/json"
+// curl -v -X POST http://localhost:8080/users/note -d '{"header": "Cart", "body": "Buy a chocolate, a car", "user": {"login": "arkadiy", "password": "123456", "role": "ADMIN"}}' -H "Content-Type: application/json"
 
 @RestController
 @RequestMapping(value = "/users/note", produces = "application/json")

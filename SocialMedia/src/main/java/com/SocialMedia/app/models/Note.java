@@ -1,5 +1,7 @@
 package com.SocialMedia.app.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -19,8 +21,8 @@ public class Note {
     private String header;
     @NotNull
     private String body;
-    @NotNull
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "login", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_login")
+    @JsonBackReference
     private User user;
 }
