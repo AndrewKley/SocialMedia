@@ -1,10 +1,9 @@
 package com.SocialMedia.app.services;
 
-import com.SocialMedia.app.exceptions.NoteNotFoundException;
 import com.SocialMedia.app.exceptions.UserNotFoundException;
-import com.SocialMedia.app.models.Note;
+import com.SocialMedia.app.models.Post;
 import com.SocialMedia.app.models.User;
-import com.SocialMedia.app.repositories.NoteRepository;
+import com.SocialMedia.app.repositories.PostRepository;
 import com.SocialMedia.app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,12 +13,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private UserRepository repository;
-    private NoteService noteService;
+    private PostService postservice;
 
     @Autowired
-    public UserService(UserRepository repository, NoteService noteService) {
+    public UserService(UserRepository repository, PostService postservice) {
         this.repository = repository;
-        this.noteService = noteService;
+        this.postservice = postservice;
     }
 
     public Iterable<User> findAllUser() {
@@ -55,13 +54,13 @@ public class UserService {
         return user;
     }
 
-    public Note addNoteByUser(User user, Note note) throws UserNotFoundException {
+    public Post addpostByUser(User user, Post post) throws UserNotFoundException {
         Optional<User> resUser = repository.findById(user.getLogin());
         if (!resUser.isPresent()) {
             throw new UserNotFoundException();
         }
-        resUser.get().getNotes().add(note);
-        return note;
+        resUser.get().getNotes().add(post);
+        return post;
     }
 
 }
