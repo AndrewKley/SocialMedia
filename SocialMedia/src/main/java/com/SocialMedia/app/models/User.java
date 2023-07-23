@@ -21,13 +21,24 @@ public class User {
     @Id
     @NotNull
     @Size(min = 3, message = "Name must be at least 3 characters long")
+    @Column(name = "login")
     private String login;
     @NotNull
     @Size(min = 6, message = "Password must be at least 6 characters long")
+    @Column(name = "password")
     private String password;
     @NotNull
+    @Column(name = "role")
     private String role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Post> notes;
+
+    @OneToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_login"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
 }
