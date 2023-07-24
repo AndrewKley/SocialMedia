@@ -1,9 +1,15 @@
 package com.SocialMedia.app.models;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
+@AllArgsConstructor
 @Data
 @Table(name = "roles")
 public class Role {
@@ -12,6 +18,10 @@ public class Role {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "name", unique = true)
+    private String role;
+
+    public Role(String role) {
+        this.role = role;
+    }
 }

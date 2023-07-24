@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -27,9 +28,6 @@ public class User {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     @Column(name = "password")
     private String password;
-    @NotNull
-    @Column(name = "role")
-    private String role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Post> notes;
@@ -41,4 +39,13 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+
+    public User(String login, String password, Role role) {
+        this.login = login;
+        this.password = password;
+        if (roles == null) {
+            roles = new ArrayList<>();
+        }
+        roles.add(role);
+    }
 }

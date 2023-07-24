@@ -12,7 +12,13 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
-    Optional<Role> findByName(String role) {
-        return roleRepository.findByName(role);
+    public Optional<Role> findByRole(String role) {
+        return roleRepository.findByRole(role);
+    }
+
+    public void save(Role role) {
+        if (!roleRepository.findByRole(role.getRole()).isPresent()) {
+            roleRepository.save(role);
+        }
     }
 }

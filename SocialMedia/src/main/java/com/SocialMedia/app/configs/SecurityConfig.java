@@ -1,5 +1,9 @@
 package com.SocialMedia.app.configs;
 
+import com.SocialMedia.app.models.Role;
+import com.SocialMedia.app.models.User;
+import com.SocialMedia.app.repositories.UserRepository;
+import com.SocialMedia.app.services.RoleService;
 import com.SocialMedia.app.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
@@ -13,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.stereotype.Component;
@@ -60,8 +65,15 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    @Bean
-//    public ApplicationRunner applicationRunner(BCryptPasswordEncoder encoder) {
-//        return
-//    }
+    @Bean
+    public ApplicationRunner applicationRunner(
+            BCryptPasswordEncoder encoder,
+            UserService userService,
+            RoleService roleService) {
+        roleService.save(new Role("ROLE_ADMIN"));
+        roleService.save(new Role("ROLE_USER"));
+        return args -> {
+            userService.saveUser(new User("ark", encoder.encode("123456"), roleService.findByRole("ROLE_ADMIN").get()));
+        };
+    }
 }

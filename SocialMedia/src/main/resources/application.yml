@@ -7,5 +7,5 @@ spring:
     generate-ddl: true
 
 jwt:
-  secret: secrets
+  secret: qwertyuiopasdfghjklzxcvbnm12345678900987654321qwerty
   lifetime: 30m

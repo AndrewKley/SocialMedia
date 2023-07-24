@@ -77,7 +77,7 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getLogin(),
                 user.getPassword(),
-                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
+                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList())
         );
     }
 
@@ -85,7 +85,7 @@ public class UserService implements UserDetailsService {
         if (repository.findByLogin(user.getLogin()).isPresent()) {
             throw new Exception("User with this login exists");
         }
-        user.setRoles(List.of(roleService.findByName("ROLE_USER").get()));
+        user.setRoles(List.of(roleService.findByRole("ROLE_USER").get()));
         repository.save(user);
     }
 }
