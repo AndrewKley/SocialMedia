@@ -1,5 +1,6 @@
 package com.SocialMedia.app.configs;
 
+import com.SocialMedia.app.components.JwtRequestFilter;
 import com.SocialMedia.app.models.Role;
 import com.SocialMedia.app.models.User;
 import com.SocialMedia.app.repositories.UserRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
     private final UserService userService;
+    private final JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,13 +40,14 @@ public class SecurityConfig {
                 .authorizeRequests()
 //                .requestMatchers("/auth").permitAll()
 //                .requestMatchers("/**").authenticated()
-                .requestMatchers("/admin").hasRole("ADMIN")
                 .requestMatchers("/users").authenticated()
+                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+                        exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
