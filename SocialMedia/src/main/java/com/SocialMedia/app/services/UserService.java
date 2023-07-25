@@ -1,15 +1,16 @@
 package com.SocialMedia.app.services;
 
+import com.SocialMedia.app.DTO.RegistrationUserDTO;
 import com.SocialMedia.app.exceptions.UserNotFoundException;
 import com.SocialMedia.app.models.Post;
 import com.SocialMedia.app.models.User;
-import com.SocialMedia.app.repositories.PostRepository;
 import com.SocialMedia.app.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +19,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    private UserRepository repository;
-    private RoleService roleService;
+    private final UserRepository repository;
+    private final RoleService roleService;
+    private final PasswordEncoder encoder;
 
-    @Autowired
-    public UserService(UserRepository repository, RoleService roleService) {
-        this.repository = repository;
-        this.roleService = roleService;
-    }
 
     public Iterable<User> findAllUser() {
         return repository.findAll();
@@ -61,7 +59,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public Post addpostByUser(User user, Post post) throws UserNotFoundException {
+    public Post addPostByUser(User user, Post post) throws UserNotFoundException {
         Optional<User> resUser = repository.findById(user.getLogin());
         if (!resUser.isPresent()) {
             throw new UserNotFoundException();
@@ -81,10 +79,13 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public void createUser(User user) throws Exception {
-        if (repository.findByLogin(user.getLogin()).isPresent()) {
+    public void createUser(RegistrationUserDTO userDTO) throws Exception {
+        if (repository.findByLogin(userDTO.getLogin()).isPresent()) {
             throw new Exception("User with this login exists");
         }
+        User user = new User();
+        user.setLogin(userDTO.getLogin());
+        user.setPassword(encoder.encode(userDTO.getPassword()));
         user.setRoles(List.of(roleService.findByRole("ROLE_USER").get()));
         repository.save(user);
     }

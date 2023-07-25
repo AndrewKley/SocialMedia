@@ -15,8 +15,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 @Table(name = "users")
 public class User {
     @Id

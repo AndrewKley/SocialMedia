@@ -3,7 +3,6 @@ package com.SocialMedia.app.configs;
 import com.SocialMedia.app.components.JwtRequestFilter;
 import com.SocialMedia.app.models.Role;
 import com.SocialMedia.app.models.User;
-import com.SocialMedia.app.repositories.UserRepository;
 import com.SocialMedia.app.services.RoleService;
 import com.SocialMedia.app.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig {
     private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -54,14 +54,9 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         daoAuthenticationProvider.setUserDetailsService(userService);
         return daoAuthenticationProvider;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
