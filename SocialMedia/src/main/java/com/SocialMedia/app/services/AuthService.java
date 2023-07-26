@@ -12,8 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,7 +36,7 @@ public class AuthService {
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
             return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(), "Password mistmatch"), HttpStatus.BAD_REQUEST);
         }
-        if (userService.findUserByLogin(userDTO.getLogin()) != null) {
+        if (userService.findUserByLogin(userDTO.getLogin()).isPresent()) {
             return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(),"User with this login exists"), HttpStatus.BAD_REQUEST);
         }
 
