@@ -1,5 +1,6 @@
 package com.SocialMedia.app.controllers;
 
+import com.SocialMedia.app.DTO.ResponseUserDTO;
 import com.SocialMedia.app.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +25,18 @@ public class UserController {
 
 
     @GetMapping
-    public Iterable<User> findAllUsers() {
-        return service.findAllUser();
+    public ResponseEntity<Iterable<User>> findAllUsers() {
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/json")
+                .body(service.findAllUser());
     }
 
-    @GetMapping("{login}")
-    public ResponseEntity<User> findUserById(@PathVariable("login") String login) {
+    @GetMapping(value = "{login}", consumes = "application/json")
+    public ResponseEntity<ResponseUserDTO> findUserByLogin(@PathVariable("login") String login) {
         Optional<User> user = service.findUserByLogin(login);
         if (user.isPresent()) {
-            return new ResponseEntity<>(user.get(), HttpStatus.FOUND);
+            ResponseUserDTO responseUserDTO = new ResponseUserDTO(user.get().getLogin(), user.get().getRoles());
+            return new ResponseEntity<>(responseUserDTO, HttpStatus.FOUND);
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
