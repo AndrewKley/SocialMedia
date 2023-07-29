@@ -8,9 +8,4 @@ import lombok.Data;
 public class JwtRequest {
     private String login;
     private String password;
-
-//    public JwtRequest(String login, String password) {
-//        this.login = login;
-//        this.password = password;
-//    }
 }

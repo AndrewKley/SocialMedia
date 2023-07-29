@@ -1,6 +1,7 @@
 package com.SocialMedia.app.controllers;
 
 import com.SocialMedia.app.DTO.JwtRequest;
+import com.SocialMedia.app.DTO.JwtResponse;
 import com.SocialMedia.app.DTO.RegistrationUserDTO;
 import com.SocialMedia.app.services.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/auth")
+    @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest request) {
-        return authService.createAuthToken(request);
+        return ResponseEntity.ok(authService.createAuthToken(request));
     }
 
     @PostMapping("/registration")

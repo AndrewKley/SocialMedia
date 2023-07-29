@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 // curl -v -X POST http://localhost:8080/users/Post -d '{"header": "Cart", "body": "Buy a chocolate, a car", "user": {"login": "arkadiy", "password": "123456", "role": "ADMIN"}}' -H "Content-Type: application/json"
 
 @RestController
-@RequestMapping(value = "/users/Post", produces = "application/json")
+@RequestMapping(value = "api/users/post", produces = "application/json")
 public class PostController {
     private final PostService service;
 
