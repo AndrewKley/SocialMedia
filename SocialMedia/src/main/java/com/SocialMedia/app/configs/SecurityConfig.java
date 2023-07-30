@@ -37,11 +37,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
-                .authorizeRequests(authorize -> authorize
-                    .requestMatchers("/login", "/registration").permitAll()
-                    .requestMatchers("/api/**").authenticated()
-                    .requestMatchers("/api/admin").hasRole("ADMIN")
-                    .anyRequest().permitAll())
+                .authorizeRequests()
+                .requestMatchers("/users").authenticated()
+                .requestMatchers("/admin").hasRole("ADMIN")
+                .anyRequest().permitAll()
+                .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

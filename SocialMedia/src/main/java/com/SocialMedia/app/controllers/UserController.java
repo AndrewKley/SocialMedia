@@ -14,7 +14,7 @@ import java.util.Optional;
 // curl -v -X POST http://localhost:8080/users -d '{"login": "arkadiy", "password": "123456", "role": "ADMIN"}' -H "Content-Type: application/json"
 
 @RestController
-@RequestMapping(value = "api/users", produces = "application/json")
+@RequestMapping(value = "/users", produces = "application/json")
 @CrossOrigin(origins = "http://socialmedia:8080")
 public class UserController {
     private final UserService service;

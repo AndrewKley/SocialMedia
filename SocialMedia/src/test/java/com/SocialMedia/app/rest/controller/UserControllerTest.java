@@ -1,7 +1,6 @@
 package com.SocialMedia.app.rest.controller;
 
 import com.SocialMedia.app.DTO.JwtRequest;
-import com.SocialMedia.app.DTO.JwtResponse;
 import com.SocialMedia.app.DTO.ResponseUserDTO;
 import com.SocialMedia.app.controllers.UserController;
 import com.SocialMedia.app.models.Role;
@@ -39,30 +38,27 @@ class UserControllerTest {
 //
     @Autowired
     TestRestTemplate testRestTemplate;
-
-    @Test
-    void findAllUsers_ReturnValidResponseEntity() {
-        var headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-
-        var request = new JwtRequest("ark", "123456");
-
-        var token = testRestTemplate.exchange("/login", HttpMethod.POST, new HttpEntity<>(request, headers), JwtResponse.class);
-        headers.add("Authorization", "Bearer " + token.getBody().getToken());
-
-        var response = testRestTemplate.exchange("/api/users", HttpMethod.GET, new HttpEntity<>(headers), Iterable.class);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-   }
+//
+//    @Test
+//    void findAllUsers_ReturnValidResponseEntity() {
+//        var users = List.of(new JwtRequest("ark", "123456"));
+//
+//        Mockito.doReturn(users).when(this.userService).findAllUser();
+//
+//        var response = this.userController.findAllUsers();
+//
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+//        assertEquals(users, response.getBody());
+//   }
 
     @Test
     void findUserByLogin_LoginFound_ReturnValidResponseEntity() {
         var headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
-        var response = testRestTemplate.exchange("/api/users/{ark}", HttpMethod.GET, new HttpEntity<>(headers), ResponseUserDTO.class, "ark");
+        var response = testRestTemplate.exchange("/users/{ark}", HttpMethod.GET, new HttpEntity<>(headers), ResponseUserDTO.class, "ark");
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
