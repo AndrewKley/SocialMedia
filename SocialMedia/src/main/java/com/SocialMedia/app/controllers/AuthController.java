@@ -1,6 +1,6 @@
 package com.SocialMedia.app.controllers;
 
-import com.SocialMedia.app.DTO.JwtRequest;
+import com.SocialMedia.app.DTO.RequestUserDTO;
 import com.SocialMedia.app.DTO.RegistrationUserDTO;
 import com.SocialMedia.app.services.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/auth")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest request) {
+    public ResponseEntity<?> createAuthToken(@RequestBody RequestUserDTO request) {
         return authService.createAuthToken(request);
     }
 

@@ -1,16 +1,11 @@
 package com.SocialMedia.app.DTO;
 
-import com.SocialMedia.app.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
-public class RegistrationUserDTO {
+public class RequestUserDTO {
     private String login;
     private String password;
-    private String confirmPassword;
-    private List<Role> roles;
 }

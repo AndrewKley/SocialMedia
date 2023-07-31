@@ -40,12 +40,19 @@ public class User {
     )
     private List<Role> roles;
 
-    public User(String login, String password, Role role) {
+    public User(String login, String password, List<Role> role) {
         this.login = login;
         this.password = password;
         if (roles == null) {
+            roles = role;
+        }
+    }
+
+    public Role addRole(Role role) {
+        if (roles.isEmpty()) {
             roles = new ArrayList<>();
         }
         roles.add(role);
+        return role;
     }
 }

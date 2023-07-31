@@ -1,6 +1,9 @@
 package com.SocialMedia.app.services;
 
 import com.SocialMedia.app.DTO.RegistrationUserDTO;
+import com.SocialMedia.app.DTO.RequestUserDTO;
+import com.SocialMedia.app.DTO.ResponseUserDTO;
+import com.SocialMedia.app.exceptions.RegistrationUserException;
 import com.SocialMedia.app.exceptions.UserNotFoundException;
 import com.SocialMedia.app.models.Post;
 import com.SocialMedia.app.models.User;
@@ -14,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,38 +38,33 @@ public class UserService implements UserDetailsService {
         return repository.findByLogin(login);
     }
 
-    public User saveUser(User user) {
-        repository.save(user);
-        return user;
+    public User saveUser(RegistrationUserDTO user) throws RegistrationUserException {
+        if (user.getPassword() != user.getConfirmPassword()) {
+            throw new RegistrationUserException("Password mismatch");
+        }
+        if (findUserByLogin(user.getLogin()).isPresent()) {
+            throw new RegistrationUserException("The login exists");
+        }
+        User savedUser = new User(user.getLogin(), encoder.encode(user.getPassword()), user.getRoles());
+        repository.save(savedUser);
+        return savedUser;
     }
 
-    public User addUser(User user) throws UserNotFoundException {
-        repository.save(user);
-        return user;
-    }
-
-    public User deleteUser(User user) {
+    public User deleteUser(RequestUserDTO user) {
         Optional<User> resUser = repository.findByLogin(user.getLogin());
         if (resUser.isPresent()) {
-            repository.delete(user);
+            repository.delete(resUser.get());
             return resUser.get();
         }
         return null;
     }
 
-    public User updateUser(User user) throws UserNotFoundException {
-        deleteUser(user);
-        addUser(user);
-        return user;
-    }
-
-    public Post addPostByUser(User user, Post post) throws UserNotFoundException {
-        Optional<User> resUser = repository.findById(user.getLogin());
-        if (!resUser.isPresent()) {
-            throw new UserNotFoundException();
+    public User updateUser(User user) throws RegistrationUserException {
+        var delUser = deleteUser(convertUserToRequestUserDTO(user));
+        if (delUser != null) {
+            saveUser(new RegistrationUserDTO(delUser.getLogin(), delUser.getPassword(), delUser.getPassword(), delUser.getRoles()));
         }
-        resUser.get().getNotes().add(post);
-        return post;
+        return delUser;
     }
 
     @Override
@@ -79,14 +78,19 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public void createUser(RegistrationUserDTO userDTO) throws Exception {
-        if (repository.findByLogin(userDTO.getLogin()).isPresent()) {
-            throw new Exception("User with this login exists");
+    public List<ResponseUserDTO> convertUserToResponseUserDTO(Iterable<User> users) {
+        List<ResponseUserDTO> response = new ArrayList<>();
+        for (User u : users) {
+            response.add(convertUserToResponseUserDTO(u));
         }
-        User user = new User();
-        user.setLogin(userDTO.getLogin());
-        user.setPassword(encoder.encode(userDTO.getPassword()));
-        user.setRoles(List.of(roleService.findByRole("ROLE_USER").get()));
-        repository.save(user);
+        return response;
+    }
+
+    public ResponseUserDTO convertUserToResponseUserDTO(User user) {
+        return new ResponseUserDTO(user.getLogin(), user.getRoles());
+    }
+
+    public RequestUserDTO convertUserToRequestUserDTO(User user) {
+        return new RequestUserDTO(user.getLogin(), user.getPassword());
     }
 }

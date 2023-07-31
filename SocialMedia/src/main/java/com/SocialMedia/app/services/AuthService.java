@@ -1,6 +1,6 @@
 package com.SocialMedia.app.services;
 
-import com.SocialMedia.app.DTO.JwtRequest;
+import com.SocialMedia.app.DTO.RequestUserDTO;
 import com.SocialMedia.app.DTO.JwtResponse;
 import com.SocialMedia.app.DTO.RegistrationUserDTO;
 import com.SocialMedia.app.components.JwtTokenComponent;
@@ -21,7 +21,7 @@ public class AuthService {
     private final JwtTokenComponent jwtTokenComponent;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<?> createAuthToken(JwtRequest request) {
+    public ResponseEntity<?> createAuthToken(RequestUserDTO request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
         } catch (BadCredentialsException e) {
@@ -40,7 +40,7 @@ public class AuthService {
             return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(),"User with this login exists"), HttpStatus.BAD_REQUEST);
         }
 
-        userService.createUser(userDTO);
+        userService.saveUser(userDTO);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 }

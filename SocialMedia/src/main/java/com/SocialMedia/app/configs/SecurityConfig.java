@@ -1,5 +1,6 @@
 package com.SocialMedia.app.configs;
 
+import com.SocialMedia.app.DTO.RegistrationUserDTO;
 import com.SocialMedia.app.components.JwtRequestFilter;
 import com.SocialMedia.app.models.Role;
 import com.SocialMedia.app.models.User;
@@ -23,6 +24,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -38,7 +41,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeRequests()
-                .requestMatchers("/users").authenticated()
+                .requestMatchers("/login", "/auth").permitAll()
+                .requestMatchers("/api/**").authenticated()
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
@@ -70,7 +74,7 @@ public class SecurityConfig {
         roleService.save(new Role("ROLE_ADMIN"));
         roleService.save(new Role("ROLE_USER"));
         return args -> {
-            userService.saveUser(new User("ark", encoder.encode("123456"), roleService.findByRole("ROLE_ADMIN").get()));
+            userService.saveUser(new RegistrationUserDTO("ark", "123456", "123456", List.of(roleService.findByRole("ROLE_ADMIN").get())));
         };
     }
 }
