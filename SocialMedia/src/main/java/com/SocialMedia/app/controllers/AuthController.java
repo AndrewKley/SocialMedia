@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+//curl -v -X POST http://localhost:8080/registration -H "Content-Type: application/json" -d '{"login":"danila", "password": "123456", "confirmPassword": "123456", "roles": [{"role": "ROLE_USER"}]}'
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
