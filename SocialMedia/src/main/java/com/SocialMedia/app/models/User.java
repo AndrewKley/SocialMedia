@@ -32,7 +32,7 @@ public class User {
     @JsonManagedReference
     private List<Post> posts;
 
-    @OneToMany
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_login"),

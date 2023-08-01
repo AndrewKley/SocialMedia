@@ -4,8 +4,7 @@ import com.SocialMedia.app.DTO.RegistrationUserDTO;
 import com.SocialMedia.app.DTO.RequestUserDTO;
 import com.SocialMedia.app.DTO.ResponseUserDTO;
 import com.SocialMedia.app.exceptions.RegistrationUserException;
-import com.SocialMedia.app.exceptions.UserNotFoundException;
-import com.SocialMedia.app.models.Post;
+import com.SocialMedia.app.models.Role;
 import com.SocialMedia.app.models.User;
 import com.SocialMedia.app.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +38,16 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(RegistrationUserDTO user) throws RegistrationUserException {
-        if (user.getPassword() != user.getConfirmPassword()) {
-            throw new RegistrationUserException("Password mismatch");
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            throw new RegistrationUserException("Password mismatch " + user.getPassword() + " " + user.getConfirmPassword());
         }
         if (findUserByLogin(user.getLogin()).isPresent()) {
-            throw new RegistrationUserException("The login exists");
+            throw new RegistrationUserException("User with this login exists");
+        }
+        for (Role r : user.getRoles()) {
+            if (!roleService.findByRole(r.getRole()).isPresent()) {
+                throw new RegistrationUserException("No such role exists -> " + r.getRole());
+            }
         }
         User savedUser = new User(user.getLogin(), encoder.encode(user.getPassword()), user.getRoles());
         repository.save(savedUser);

@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -73,8 +74,10 @@ public class SecurityConfig {
             RoleService roleService) {
         roleService.save(new Role("ROLE_ADMIN"));
         roleService.save(new Role("ROLE_USER"));
+        List roles = new ArrayList<Role>();
+        roles.add(roleService.findByRole("ROLE_ADMIN").get());
         return args -> {
-            userService.saveUser(new RegistrationUserDTO("ark", "123456", "123456", List.of(roleService.findByRole("ROLE_ADMIN").get())));
+            userService.saveUser(new RegistrationUserDTO("ark", "123456", "123456", roles));
         };
     }
 }

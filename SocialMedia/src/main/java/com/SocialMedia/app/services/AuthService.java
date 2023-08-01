@@ -3,8 +3,10 @@ package com.SocialMedia.app.services;
 import com.SocialMedia.app.DTO.RequestUserDTO;
 import com.SocialMedia.app.DTO.JwtResponse;
 import com.SocialMedia.app.DTO.RegistrationUserDTO;
+import com.SocialMedia.app.DTO.ResponseUserDTO;
 import com.SocialMedia.app.components.JwtTokenComponent;
 import com.SocialMedia.app.exceptions.AuthError;
+import com.SocialMedia.app.exceptions.RegistrationUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +34,12 @@ public class AuthService {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    public ResponseEntity<?> createUser(RegistrationUserDTO userDTO) throws Exception {
-        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
-            return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(), "Password mistmatch"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> createUser(RegistrationUserDTO userDTO) {
+        try {
+            userService.saveUser(userDTO);
+            return new ResponseEntity<>(new ResponseUserDTO(userDTO.getLogin(), userDTO.getRoles()), HttpStatus.CREATED);
+        } catch (RegistrationUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        if (userService.findUserByLogin(userDTO.getLogin()).isPresent()) {
-            return new ResponseEntity<>(new AuthError(HttpStatus.BAD_REQUEST.value(),"User with this login exists"), HttpStatus.BAD_REQUEST);
-        }
-
-        userService.saveUser(userDTO);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 }

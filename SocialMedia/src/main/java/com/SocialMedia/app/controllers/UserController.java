@@ -47,16 +47,16 @@ public class UserController {
         return new ResponseEntity<>(new UserNotFoundException("user not found"), HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> createUser(@RequestBody RegistrationUserDTO user) throws RegistrationUserException {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(service.convertUserToResponseUserDTO(service.saveUser(user)));
-        } catch (RegistrationUserException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e);
-        }
-    }
+//    @PostMapping(consumes = "application/json")
+//    public ResponseEntity<?> createUser(@RequestBody RegistrationUserDTO user) throws RegistrationUserException {
+//        try {
+//            return ResponseEntity.status(HttpStatus.CREATED)
+//                    .body(service.convertUserToResponseUserDTO(service.saveUser(user)));
+//        } catch (RegistrationUserException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(e);
+//        }
+//    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<?> updateUser(@RequestBody User user) {
