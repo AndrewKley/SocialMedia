@@ -6,10 +6,11 @@ import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Data
 public class ResponseUserDTO {
     private String login;
-    private List<Role> roles;
+    private Set<Role> roles;
 }

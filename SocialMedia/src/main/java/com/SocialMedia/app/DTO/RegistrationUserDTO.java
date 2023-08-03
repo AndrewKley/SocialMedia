@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +13,5 @@ public class RegistrationUserDTO {
     private String login;
     private String password;
     private String confirmPassword;
-    private List<Role> roles;
+    private Set<Role> roles;
 }

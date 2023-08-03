@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -32,15 +35,15 @@ public class User {
     @JsonManagedReference
     private List<Post> posts;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_login"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
 
-    public User(String login, String password, List<Role> role) {
+    public User(String login, String password, Set<Role> role) {
         this.login = login;
         this.password = password;
         if (roles == null) {
@@ -50,7 +53,7 @@ public class User {
 
     public Role addRole(Role role) {
         if (roles.isEmpty()) {
-            roles = new ArrayList<>();
+            roles = new HashSet<>();
         }
         roles.add(role);
         return role;
